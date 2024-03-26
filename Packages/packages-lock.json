@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.playtestai.unitysdk": {
+      "version": "file:/Users/miguelmonares/Desktop/CS/playtest/monorepo/packages/sdk-unity",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
+      }
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
