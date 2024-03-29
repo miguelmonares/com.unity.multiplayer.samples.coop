@@ -50,6 +50,22 @@ public class Agent : MonoBehaviour
             {
                 MoveInDirection("right");
             }
+            else if (Input.GetKeyDown(KeyCode.I))
+            {
+                AttackInDirection("forward");
+            }
+            else if (Input.GetKeyDown(KeyCode.K))
+            {
+                AttackInDirection("backward");
+            }
+            else if (Input.GetKeyDown(KeyCode.J))
+            {
+                AttackInDirection("left");
+            }
+            else if (Input.GetKeyDown(KeyCode.L))
+            {
+                AttackInDirection("right");
+            }
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -94,6 +110,44 @@ public class Agent : MonoBehaviour
         // Use SendCharacterInputServerRpc for movement
         Vector3 targetPosition = playerPosition + moveDirection;
         serverCharacter.SendCharacterInputServerRpc(targetPosition);
+    }
+
+    public void AttackInDirection(string direction) {
+        Vector3 playerPosition = serverCharacter.transform.position;
+        Vector3 moveDirection = Vector3.zero;
+        Vector3 targetDirection = Vector3.zero;
+        float moveDistance = 2f; // Distance to move in the specified direction
+        switch (direction.ToLower())
+        {
+            case "forward":
+                moveDirection = transform.forward * moveDistance;
+                targetDirection = Vector3.forward;
+                break;
+            case "backward":
+                moveDirection = -transform.forward * moveDistance;
+                targetDirection = Vector3.back;
+                break;
+            case "left":
+                moveDirection = -transform.right * moveDistance;
+                targetDirection = Vector3.left;
+                break;
+            case "right":
+                moveDirection = transform.right * moveDistance;
+                targetDirection = Vector3.right;
+                break;
+        }
+
+        Vector3 targetPosition = playerPosition + moveDirection;
+
+        var action = new ActionRequestData {
+            Position = targetPosition,
+            Direction = targetDirection,
+            ActionID = serverCharacter.CharacterClass.Skill1.ActionID,
+            ShouldQueue = false,
+            TargetIds = null
+        };
+
+        serverCharacter.RecvDoActionServerRPC(action);
     }
 
     public void MoveTowardNearestEnemy()
