@@ -6,6 +6,7 @@ using System.Collections;
 public class AgentManager : MonoBehaviour
 {
     //  public PlayerController playerController;
+    public AgentManager agent;
 
 
     private void Awake()
@@ -27,6 +28,20 @@ public class AgentManager : MonoBehaviour
                 Debug.Log("Shooting the gun");
                 Shoot();
                 onComplete?.Invoke();
+                break;
+            case "MoveInDirection":
+                Debug.Log("Performing MoveInDirection");
+                float direction = parameters["direction"].Value<float>();
+                agent.MoveInDirection(direction);
+                break;
+            case "MoveTowardNearestEnemy":
+                Debug.Log("Performing MoveTowardNearestEnemy");
+                agent.MoveTowardNearestEnemy();
+                break;
+            case "AttackInDirection":
+                Debug.Log("Performing AttackInDirection");
+                string attackDirection = parameters["direction"].Value<string>();
+                agent.AttackInDirection(attackDirection);
                 break;
             default:
                 Debug.LogError("Action not recognized: " + actionName);

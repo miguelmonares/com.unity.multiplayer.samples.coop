@@ -187,22 +187,4 @@ public class Agent : MonoBehaviour
             Debug.Log("No enemies detected within radius.");
         }
     }
-
-    public void AttackInDirection(string direction)
-    {
-        // Assuming direction is "forward", "backward", "left", or "right"
-        // You might need to adjust this method to actually determine the direction vector based on the input
-        // For simplicity, let's just use the "forward" direction as an example
-
-        if (direction.ToLower() == "forward")
-        {
-            // Trigger the first ability (Skill1) as an example
-            // You need to replace `actionState1.actionID` with the actual ActionID for the ability you want to trigger
-            if (inputSender != null && serverCharacter.CharacterClass.Skill1 != null)
-            {
-                inputSender.RequestAction(serverCharacter.CharacterClass.Skill1.ActionID, ClientInputSender.SkillTriggerStyle.Keyboard);
-            }
-        }
-        // Add similar conditions for "backward", "left", "right" to trigger different abilities or the same ability in different directions
-    }
 }

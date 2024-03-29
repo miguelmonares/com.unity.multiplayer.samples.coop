@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.playtestai.unitysdk": {
-      "version": "file:/Users/adenal-hardan/Desktop/monorepo/packages/sdk-unity",
+      "version": "file:/Users/miguelmonares/Desktop/CS/playtest/monorepo/packages/sdk-unity",
       "depth": 0,
       "source": "local",
       "dependencies": {
