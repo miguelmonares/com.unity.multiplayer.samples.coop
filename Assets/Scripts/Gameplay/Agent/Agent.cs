@@ -1,24 +1,30 @@
 using UnityEngine;
 using Unity.BossRoom.Gameplay.GameplayObjects.Character;
 using Unity.BossRoom.Gameplay.Actions;
+using Unity.BossRoom.Gameplay.UserInput;
 using System.Linq;
 
 public class Agent : MonoBehaviour
 {
+    // References to different scripts in the game.
     private ServerCharacterMovement characterMovement;
-    private ServerCharacter serverCharacter; // Reference to the ServerCharacter component
+    private ServerCharacter serverCharacter; 
+    private ClientInputSender inputSender; 
 
+    // This gets called whenever the object/script is activated. This object activates when the game scene starts.
     void OnEnable()
     {
         ClientPlayerAvatar.LocalClientSpawned += OnLocalClientSpawned;
         Debug.Log("Agent initialized.");
     }
 
+    // This object deactivates when the game scene ends.
     void OnDisable()
     {
         ClientPlayerAvatar.LocalClientSpawned -= OnLocalClientSpawned;
     }
 
+    // This gets called once per frame.
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -45,13 +51,20 @@ public class Agent : MonoBehaviour
                 MoveInDirection("right");
             }
         }
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            AttackInDirection("forward");
+        }
     }
 
+    // This gets called when the player logs in.
     private void OnLocalClientSpawned(ClientPlayerAvatar avatar)
     {
         // Get the ServerCharacterMovement and ServerCharacter components from the avatar
         characterMovement = avatar.GetComponent<ServerCharacterMovement>();
         serverCharacter = avatar.GetComponent<ServerCharacter>(); // Obtain the ServerCharacter component
+        inputSender = avatar.GetComponent<ClientInputSender>(); // Obtain the ClientInputSender component
+
 
         Debug.Log("Testing agent movement.");
     }
@@ -119,5 +132,23 @@ public class Agent : MonoBehaviour
         {
             Debug.Log("No enemies detected within radius.");
         }
+    }
+
+    public void AttackInDirection(string direction)
+    {
+        // Assuming direction is "forward", "backward", "left", or "right"
+        // You might need to adjust this method to actually determine the direction vector based on the input
+        // For simplicity, let's just use the "forward" direction as an example
+
+        if (direction.ToLower() == "forward")
+        {
+            // Trigger the first ability (Skill1) as an example
+            // You need to replace `actionState1.actionID` with the actual ActionID for the ability you want to trigger
+            if (inputSender != null && serverCharacter.CharacterClass.Skill1 != null)
+            {
+                inputSender.RequestAction(serverCharacter.CharacterClass.Skill1.ActionID, ClientInputSender.SkillTriggerStyle.Keyboard);
+            }
+        }
+        // Add similar conditions for "backward", "left", "right" to trigger different abilities or the same ability in different directions
     }
 }

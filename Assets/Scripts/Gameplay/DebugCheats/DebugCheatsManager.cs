@@ -54,6 +54,11 @@ namespace Unity.BossRoom.DebugCheats
         [Inject]
         IPublisher<CheatUsedMessage> m_CheatUsedMessagePublisher;
 
+        void Awake()
+        {
+            m_DebugCheatsPanel.SetActive(false);
+        }
+        
         void Update()
         {
             if (Input.touchCount == k_NbTouchesToOpenWindow && AnyTouchDown() ||
