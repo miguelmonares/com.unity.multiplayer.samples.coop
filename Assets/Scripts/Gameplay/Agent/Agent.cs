@@ -2,9 +2,12 @@ using UnityEngine;
 using Unity.BossRoom.Gameplay.GameplayObjects.Character;
 using Unity.BossRoom.Gameplay.Actions;
 using Unity.BossRoom.Gameplay.UserInput;
+using System.Collections;
 using System.Linq;
+using System;
 
-public class Agent : MonoBehaviour
+
+public class PlaytestAgent : MonoBehaviour
 {
     // References to different scripts in the game.
     private ServerCharacterMovement characterMovement;
@@ -29,47 +32,47 @@ public class Agent : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            MoveTowardNearestEnemy();
+            MoveTowardNearestEnemy(null);
         }
         
         if(serverCharacter != null) // Ensure serverCharacter is not null
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
-                MoveInDirection("forward");
+                MoveInDirection("forward", null);
             }
             else if (Input.GetKeyDown(KeyCode.S))
             {
-                MoveInDirection("backward");
+                MoveInDirection("backward", null);
             }
             else if (Input.GetKeyDown(KeyCode.A))
             {
-                MoveInDirection("left");
+                MoveInDirection("left", null);
             }
             else if (Input.GetKeyDown(KeyCode.D))
             {
-                MoveInDirection("right");
+                MoveInDirection("right", null);
             }
             else if (Input.GetKeyDown(KeyCode.I))
             {
-                AttackInDirection("forward");
+                AttackInDirection("forward", null);
             }
             else if (Input.GetKeyDown(KeyCode.K))
             {
-                AttackInDirection("backward");
+                AttackInDirection("backward", null);
             }
             else if (Input.GetKeyDown(KeyCode.J))
             {
-                AttackInDirection("left");
+                AttackInDirection("left", null);
             }
             else if (Input.GetKeyDown(KeyCode.L))
             {
-                AttackInDirection("right");
+                AttackInDirection("right", null);
             }
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            AttackInDirection("forward");
+            AttackInDirection("forward", null);
         }
     }
 
@@ -85,7 +88,7 @@ public class Agent : MonoBehaviour
         Debug.Log("Testing agent movement.");
     }
 
-    public void MoveInDirection(string direction)
+    public void MoveInDirection(string direction, System.Action onComplete)
     {
         Vector3 playerPosition = serverCharacter.transform.position;
         Vector3 moveDirection = Vector3.zero;
@@ -110,9 +113,10 @@ public class Agent : MonoBehaviour
         // Use SendCharacterInputServerRpc for movement
         Vector3 targetPosition = playerPosition + moveDirection;
         serverCharacter.SendCharacterInputServerRpc(targetPosition);
+        StartCoroutine(ActionCompleteAfterDelay(onComplete, 1f));
     }
 
-    public void AttackInDirection(string direction) {
+    public void AttackInDirection(string direction, System.Action onComplete) {
         Vector3 playerPosition = serverCharacter.transform.position;
         Vector3 moveDirection = Vector3.zero;
         Vector3 targetDirection = Vector3.zero;
@@ -148,9 +152,10 @@ public class Agent : MonoBehaviour
         };
 
         serverCharacter.RecvDoActionServerRPC(action);
+        StartCoroutine(ActionCompleteAfterDelay(onComplete, .5f));
     }
 
-    public void MoveTowardNearestEnemy()
+    public void MoveTowardNearestEnemy(System.Action onComplete)
     {
         Debug.Log("invoked MoveTowardNearestEnemy");
         float detectionRadius = 10f; // Set the detection radius
@@ -181,10 +186,34 @@ public class Agent : MonoBehaviour
         {
             Vector3 destination = ActionUtils.GetDashDestination(serverCharacter.transform, closestEnemy.transform.position, true);
             serverCharacter.SendCharacterInputServerRpc(destination);
+            StartCoroutine(CheckDistanceAndComplete(closestEnemy.transform, onComplete));
         }
         else
         {
             Debug.Log("No enemies detected within radius.");
+            onComplete?.Invoke(); // Invoke completion if no enemy is found
         }
     }
+
+    private IEnumerator ActionCompleteAfterDelay(System.Action onComplete, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        onComplete?.Invoke();
+    }
+
+    private IEnumerator CheckDistanceAndComplete(Transform enemyTransform, System.Action onComplete)
+{
+    float completionRadius = 1f; // The radius within which the action is considered complete
+    while (true)
+    {
+        float distanceToEnemy = Vector3.Distance(serverCharacter.transform.position, enemyTransform.position);
+        if (distanceToEnemy <= completionRadius)
+        {
+            Debug.Log("Agent is within completion radius of the enemy.");
+            onComplete?.Invoke();
+            yield break; // Exit the coroutine
+        }
+        yield return new WaitForSeconds(0.1f); // Check distance every 0.1 seconds
+    }
+}
 }

@@ -6,7 +6,7 @@ using System.Collections;
 public class AgentManager : MonoBehaviour
 {
     //  public PlayerController playerController;
-    public AgentManager agent;
+    public PlaytestAgent agent;
 
 
     private void Awake()
@@ -17,6 +17,10 @@ public class AgentManager : MonoBehaviour
             playerController = FindObjectOfType<PlayerController>();
         }
         */
+        if (!agent)
+        {
+            agent = FindObjectOfType<PlaytestAgent>();
+        }
     }
 
     public void PerformAction(string actionName, JObject parameters, Action onComplete)
@@ -30,18 +34,18 @@ public class AgentManager : MonoBehaviour
                 onComplete?.Invoke();
                 break;
             case "MoveInDirection":
-                Debug.Log("Performing MoveInDirection");
-                float direction = parameters["direction"].Value<float>();
-                agent.MoveInDirection(direction);
+                string direction = parameters["direction"].Value<string>();
+                Debug.Log("Performing MoveInDirection in the direction of " + direction);
+                agent.MoveInDirection(direction, onComplete);
                 break;
             case "MoveTowardNearestEnemy":
                 Debug.Log("Performing MoveTowardNearestEnemy");
-                agent.MoveTowardNearestEnemy();
+                agent.MoveTowardNearestEnemy(onComplete);
                 break;
             case "AttackInDirection":
-                Debug.Log("Performing AttackInDirection");
                 string attackDirection = parameters["direction"].Value<string>();
-                agent.AttackInDirection(attackDirection);
+                Debug.Log("Performing AttackInDirection in the direction of " + attackDirection);
+                agent.AttackInDirection(attackDirection, onComplete);
                 break;
             default:
                 Debug.LogError("Action not recognized: " + actionName);
