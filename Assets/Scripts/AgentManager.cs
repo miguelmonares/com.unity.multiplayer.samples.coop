@@ -2,13 +2,16 @@ using UnityEngine;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
+using AYellowpaper.SerializedCollections;
 
 public class AgentManager : MonoBehaviour
 {
+    [SerializedDictionary("Element Type", "Description")]
+    public SerializedDictionary<string, string> ElementDescriptions2;
+    
     //  public PlayerController playerController;
     public PlaytestAgent agent;
-
-
+    
     private void Awake()
     {
         /* Assign controllers on wake.
