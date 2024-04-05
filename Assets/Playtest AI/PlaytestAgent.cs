@@ -1,5 +1,6 @@
 using System.Collections;
 using Unity.BossRoom.Gameplay.Actions;
+using Unity.BossRoom.Gameplay.GameplayObjects;
 using Unity.BossRoom.Gameplay.GameplayObjects.Character;
 using Unity.Netcode;
 using UnityEngine;
@@ -54,11 +55,13 @@ public class PlaytestAgent : MonoBehaviour
         if (obj != null)
         {
             ulong[] objIds = null;
-            if (obj.GetComponent<NetworkObject>()) objIds[0] = obj.GetComponent<NetworkObject>().NetworkObjectId;
+            if (obj.GetComponent<NetworkObject>())
+                objIds = new[] { obj.GetComponent<NetworkObject>().NetworkObjectId };
             var action = new ActionRequestData
             {
                 ActionID = serverCharacter.CharacterClass.Skill1.ActionID,
                 ShouldQueue = false,
+                ShouldClose = true,
                 TargetIds = objIds
             };
             serverCharacter.RecvDoActionServerRPC(action);
@@ -67,7 +70,29 @@ public class PlaytestAgent : MonoBehaviour
 
     public void StressTestCurrentPos()
     {
-        // TODO: Spam move within a 1f radius of current pos
+        IEnumerator Helper(float radius, float duration)
+        {
+            var initialPosition = serverCharacter.transform.position;
+            var timer = 0f;
+            while (timer < duration)
+            {
+                var randomDirection = Random.insideUnitSphere;
+                randomDirection.y = 0f;
+                randomDirection.Normalize();
+
+                var targetPosition = initialPosition + randomDirection * radius;
+                serverCharacter.SendCharacterInputServerRpc(targetPosition);
+                while (serverCharacter.MovementStatus.Value != MovementStatus.Idle)
+                {
+                    timer += Time.deltaTime;
+                    yield return null;
+                }
+
+                yield return null;
+            }
+        }
+
+        StartCoroutine(Helper(2, 30));
     }
 
 
@@ -76,35 +101,26 @@ public class PlaytestAgent : MonoBehaviour
     //------------------------------------------------------------------------------------------------
     private GameObject GetNearestObjectOfType(string type)
     {
-        var detectionRadius = 10f; // Set the detection radius
+        var detectionRadius = 100f; // Set the detection radius
         // Create a layer mask for the NPCs layer
         var layerMask = LayerMask.GetMask(type);
 
         // Use the layer mask in the OverlapSphere call to only get colliders on the NPCs layer
         var hitColliders = Physics.OverlapSphere(serverCharacter.transform.position, detectionRadius, layerMask);
         Collider closestObject = null;
-        var closestDistanceSqr = Mathf.Infinity;
-        var currentPosition = serverCharacter.transform.position;
+        var closestDistance = Mathf.Infinity;
 
-        // Iterate through all found colliders to find the closest one
-        while (!closestObject)
+        foreach (var hitCollider in hitColliders)
         {
-            if (detectionRadius > 50f) return null;
-            foreach (var hitCollider in hitColliders)
+            var distance = Vector3.Distance(hitCollider.transform.position, serverCharacter.transform.position);
+            if (distance < closestDistance && distance > 1f)
             {
-                var directionToTarget = hitCollider.transform.position - currentPosition;
-                var dSqrToTarget = directionToTarget.sqrMagnitude;
-                if (dSqrToTarget < closestDistanceSqr)
-                {
-                    closestDistanceSqr = dSqrToTarget;
-                    closestObject = hitCollider;
-                }
+                closestDistance = distance;
+                closestObject = hitCollider;
             }
-
-            detectionRadius += 10f;
         }
 
-        return closestObject.gameObject;
+        return closestObject?.gameObject;
     }
 
     private IEnumerator MoveToTransform(Transform transform)
