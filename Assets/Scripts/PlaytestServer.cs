@@ -6,7 +6,7 @@ using UnityEngine;
 using System.Collections.Concurrent;
 
 
-public class CommandClient : MonoBehaviour
+public class PlaytestServer : MonoBehaviour
 {
     // Configuration for connecting to the Python server
     public string serverIP = "localhost";
@@ -16,21 +16,11 @@ public class CommandClient : MonoBehaviour
     private NetworkStream stream;
     private Thread clientThread;
 
-    private ConcurrentQueue<Action> mainThreadActions = new ConcurrentQueue<Action>();
-
     void Start()
     {
         clientThread = new Thread(ConnectToServer);
         clientThread.IsBackground = true;
         clientThread.Start();
-    }
-
-    void Update()
-    {
-        while (mainThreadActions.TryDequeue(out var action))
-        {
-            action.Invoke();
-        }
     }
 
     private void ConnectToServer()
