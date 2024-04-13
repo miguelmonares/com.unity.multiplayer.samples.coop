@@ -6,13 +6,18 @@ using System.Collections;
 using System.Linq;
 using System;
 
-
-public class PlaytestAgent : MonoBehaviour
+namespace Unity.BossRoom.Gameplay.Agent
+{
+public class Agent : MonoBehaviour
 {
     // References to different scripts in the game.
     private ServerCharacterMovement characterMovement;
     private ServerCharacter serverCharacter; 
     private ClientInputSender inputSender; 
+
+    // Define a delegate for action completion
+    public delegate void ActionCompletedDelegate(string message);
+    public event ActionCompletedDelegate OnActionCompleted;
 
     // This gets called whenever the object/script is activated. This object activates when the game scene starts.
     void OnEnable()
@@ -32,7 +37,8 @@ public class PlaytestAgent : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            MoveTowardNearestEnemy(null);
+            // MoveTowardNearestEnemy(null);
+            ListAllObjects();
         }
         
         if(serverCharacter != null) // Ensure serverCharacter is not null
@@ -158,7 +164,7 @@ public class PlaytestAgent : MonoBehaviour
     public void MoveTowardNearestEnemy(System.Action onComplete)
     {
         Debug.Log("invoked MoveTowardNearestEnemy");
-        float detectionRadius = 10f; // Set the detection radius
+        float detectionRadius = 20f; // Set the detection radius
         // Create a layer mask for the NPCs layer
         int layerMask = LayerMask.GetMask("NPCs");
         
@@ -191,6 +197,7 @@ public class PlaytestAgent : MonoBehaviour
         else
         {
             Debug.Log("No enemies detected within radius.");
+            OnActionCompleted?.Invoke("Move Toward Nearest Enemy Completed");
             onComplete?.Invoke(); // Invoke completion if no enemy is found
         }
     }
@@ -202,18 +209,33 @@ public class PlaytestAgent : MonoBehaviour
     }
 
     private IEnumerator CheckDistanceAndComplete(Transform enemyTransform, System.Action onComplete)
-{
-    float completionRadius = 1f; // The radius within which the action is considered complete
-    while (true)
     {
-        float distanceToEnemy = Vector3.Distance(serverCharacter.transform.position, enemyTransform.position);
-        if (distanceToEnemy <= completionRadius)
+        float completionRadius = 1f; // The radius within which the action is considered complete
+        while (true)
         {
-            Debug.Log("Agent is within completion radius of the enemy.");
-            onComplete?.Invoke();
-            yield break; // Exit the coroutine
+            float distanceToEnemy = Vector3.Distance(serverCharacter.transform.position, enemyTransform.position);
+            if (distanceToEnemy <= completionRadius)
+            {
+                Debug.Log("Agent is within completion radius of the enemy.");
+                OnActionCompleted?.Invoke("Move Toward Nearest Enemy Completed");
+
+                onComplete?.Invoke();
+                yield break; // Exit the coroutine
+            }
+            yield return new WaitForSeconds(0.1f); // Check distance every 0.1 seconds
         }
-        yield return new WaitForSeconds(0.1f); // Check distance every 0.1 seconds
+    }
+
+    private void ListAllObjects()
+    {
+        GameObject[] allObjects = UnityEngine.Object.FindObjectsOfType<GameObject>() ;
+        foreach(GameObject go in allObjects)
+        {
+        if (go.activeInHierarchy)
+        {
+            print(go.name+" is an active object") ;
+        }
+        }
     }
 }
 }
