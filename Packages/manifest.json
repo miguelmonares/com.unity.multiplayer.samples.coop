@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "ayellowpaper.serialized-dictionary": "https://github.com/ayellowpaper/SerializedDictionary.git",
     "com.playtestai.unitysdk": "file:C:/Users/rober/Archive/Playtest AI/monorepo/packages/sdk-unity",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "1.1.5",
