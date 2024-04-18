@@ -1,14 +1,17 @@
-// using UnityEngine;
-// using Newtonsoft.Json.Linq;
 // using System;
-// using System.Collections;
-
+// using AYellowpaper.SerializedCollections;
+// using Newtonsoft.Json.Linq;
+// using Unity.BossRoom.Gameplay.Agent;
+// using UnityEngine;
+//
 // public class AgentManager : MonoBehaviour
 // {
+//     [SerializedDictionary("Element Type", "Description")]
+//     public SerializedDictionary<string, string> ElementDescriptions2;
+//
 //     //  public PlayerController playerController;
 //     public Agent agent;
-
-
+//
 //     private void Awake()
 //     {
 //         /* Assign controllers on wake.
@@ -17,12 +20,9 @@
 //             playerController = FindObjectOfType<PlayerController>();
 //         }
 //         */
-//         if (!agent)
-//         {
-//             agent = FindObjectOfType<PlaytestAgent>();
-//         }
+//         if (!agent) agent = FindObjectOfType<PlaytestAgent>();
 //     }
-
+//
 //     public void PerformAction(string actionName, JObject parameters, Action onComplete)
 //     {
 //         switch (actionName)
@@ -34,7 +34,7 @@
 //                 onComplete?.Invoke();
 //                 break;
 //             case "MoveInDirection":
-//                 string direction = parameters["direction"].Value<string>();
+//                 var direction = parameters["direction"].Value<string>();
 //                 Debug.Log("Performing MoveInDirection in the direction of " + direction);
 //                 agent.MoveInDirection(direction, onComplete);
 //                 break;
@@ -43,19 +43,18 @@
 //                 agent.MoveTowardNearestEnemy(onComplete);
 //                 break;
 //             case "AttackInDirection":
-//                 string attackDirection = parameters["direction"].Value<string>();
+//                 var attackDirection = parameters["direction"].Value<string>();
 //                 Debug.Log("Performing AttackInDirection in the direction of " + attackDirection);
 //                 agent.AttackInDirection(attackDirection, onComplete);
 //                 break;
 //             default:
 //                 Debug.LogError("Action not recognized: " + actionName);
 //                 break;
-            
 //         }
 //     }
-
-//     public void Shoot() {
+//
+//     public void Shoot()
+//     {
 //         Debug.Log("Simulating Shoot");
 //     }
-    
 // }
