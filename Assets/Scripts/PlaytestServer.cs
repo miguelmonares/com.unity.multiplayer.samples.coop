@@ -146,6 +146,10 @@ public class PlaytestServer : MonoBehaviour
                         });
                         
                     }
+                    else if (command.Equals("quit", StringComparison.OrdinalIgnoreCase))
+                    {
+                        EnqueueMainThreadAction(QuitGame);
+                    }
                 }
             }
         }
@@ -158,6 +162,12 @@ public class PlaytestServer : MonoBehaviour
             stream?.Close();
             client?.Close();
         }
+    }
+
+    private void QuitGame()
+    {
+        Application.Quit();
+        // OnDestroy should handle clean up here.
     }
 
     void OnDestroy()
