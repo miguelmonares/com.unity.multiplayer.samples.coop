@@ -58,10 +58,7 @@ public class AutoStartGame : MonoBehaviour
 
     private void AutomateCharacterSelectionAndStartGame()
     {
-        
         ClientCharSelectState.Instance.OnPlayerClickedSeat(1);
         ClientCharSelectState.Instance.OnPlayerClickedReady();
-        
     }
 }
-
