@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.playtestai.unitysdk": {
+    "com.playtest.unitysdk": {
       "version": "file:C:/Users/rober/Archive/Playtest AI/monorepo/packages/sdk-unity",
       "depth": 0,
       "source": "local",
