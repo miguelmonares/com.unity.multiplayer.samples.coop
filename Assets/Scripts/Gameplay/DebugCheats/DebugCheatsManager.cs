@@ -9,6 +9,7 @@ using Unity.Multiplayer.Samples.Utilities;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
+using Playtest;
 
 namespace Unity.BossRoom.DebugCheats
 {
@@ -58,7 +59,7 @@ namespace Unity.BossRoom.DebugCheats
         {
             m_DebugCheatsPanel.SetActive(false);
         }
-        
+
         void Update()
         {
             if (Input.touchCount == k_NbTouchesToOpenWindow && AnyTouchDown() ||
@@ -80,21 +81,25 @@ namespace Unity.BossRoom.DebugCheats
             return false;
         }
 
+        [PlaytestAction("xpawnn")]
         public void SpawnEnemy()
         {
             SpawnEnemyServerRpc();
         }
 
+        [PlaytestAction("no")]
         public void SpawnBoss()
         {
             SpawnBossServerRpc();
         }
 
+        [PlaytestAction("noa")]
         public void KillTarget()
         {
             KillTargetServerRpc();
         }
 
+        [PlaytestAction("noab")]
         public void KillAllEnemies()
         {
             KillAllEnemiesServerRpc();

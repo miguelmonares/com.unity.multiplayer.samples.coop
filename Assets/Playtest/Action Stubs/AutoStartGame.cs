@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.BossRoom.Gameplay.UI;
 using Unity.BossRoom.Gameplay.GameState;
+using Playtest;
 
 public class AutoStartGame : MonoBehaviour
 {
@@ -56,6 +57,7 @@ public class AutoStartGame : MonoBehaviour
         }
     }
 
+    [PlaytestAction("tessst")]
     private void AutomateCharacterSelectionAndStartGame()
     {
         ClientCharSelectState.Instance.OnPlayerClickedSeat(1);
