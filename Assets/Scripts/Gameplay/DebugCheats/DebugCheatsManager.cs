@@ -81,7 +81,6 @@ namespace Unity.BossRoom.DebugCheats
             return false;
         }
 
-        [PlaytestAction("spawn", "spawns an enemy.")]
         public void SpawnEnemy()
         {
             SpawnEnemyServerRpc();
