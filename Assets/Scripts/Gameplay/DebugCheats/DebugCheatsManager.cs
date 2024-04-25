@@ -81,25 +81,22 @@ namespace Unity.BossRoom.DebugCheats
             return false;
         }
 
-        [PlaytestAction("xpawnn")]
+        [PlaytestAction("spawn", "spawns an enemy.")]
         public void SpawnEnemy()
         {
             SpawnEnemyServerRpc();
         }
 
-        [PlaytestAction("no")]
         public void SpawnBoss()
         {
             SpawnBossServerRpc();
         }
 
-        [PlaytestAction("noa")]
         public void KillTarget()
         {
             KillTargetServerRpc();
         }
 
-        [PlaytestAction("noab")]
         public void KillAllEnemies()
         {
             KillAllEnemiesServerRpc();

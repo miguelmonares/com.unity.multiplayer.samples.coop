@@ -57,7 +57,7 @@ public class AutoStartGame : MonoBehaviour
         }
     }
 
-    [PlaytestAction("tessst")]
+    [PlaytestAction("test", "just let me cook.")]
     private void AutomateCharacterSelectionAndStartGame()
     {
         ClientCharSelectState.Instance.OnPlayerClickedSeat(1);
